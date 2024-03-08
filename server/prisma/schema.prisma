@@ -12,3 +12,53 @@ datasource db {
   provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
+
+model Users {
+  id         String       @id @default(uuid())
+  name       String
+  email      String       @unique
+  password   String
+  createdAt  DateTime     @default(now())
+  Characters Characters[]
+}
+
+model Characters {
+  id        String   @id @default(uuid())
+  User      Users    @relation(fields: [userId], references: [id])
+  userId    String
+  nickname  String
+  Class     Classes  @relation(fields: [classId], references: [id])
+  classId   Int
+  createdAt DateTime @default(now())
+  priority  Int
+  Tasks     Tasks[]
+}
+
+model Classes {
+  id         Int          @id @default(autoincrement())
+  name       String
+  shortname  String
+  Characters Characters[]
+  createdAt  DateTime     @default(now())
+}
+
+model Tasks {
+  id              String            @id @default(uuid())
+  name            String
+  Character       Characters        @relation(fields: [characterId], references: [id])
+  characterId     String
+  week_day_reset  Int
+  time_reset      String
+  createdAt       DateTime          @default(now())
+  Disponibilities Disponibilities[]
+}
+
+model Disponibilities {
+  id         String   @id @default(uuid())
+  week_day   Int
+  start_time String
+  end_time   String
+  createdAt  DateTime @default(now())
+  Task       Tasks    @relation(fields: [taskId], references: [id])
+  taskId     String
+}
